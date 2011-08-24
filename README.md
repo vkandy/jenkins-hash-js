@@ -3,7 +3,7 @@
 A Javascript implementation of Bob Jenkins' hash for non-cryptographic purposes. This implementaion can yield 32-bit and 64-bit hash values and can be used for hashtable lookups.
 
 ## What is Jenkins hash?
-Jenkins hash is a general purpose hash algorithm created by Bob Jenkins. It takes an input of variable length and processes chunks of 12-bytes each and outputs a hash value as int (32 bits) or long (64 bits).
+Jenkins hash is a general purpose hash algorithm created by Bob Jenkins. It takes an input of variable length and processes chunks of 12-bytes each and outputs a hash value as 32 bit or 64 bit hexa decimal integer.
 
 Advantages over other hash algorithms:
 
