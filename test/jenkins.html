@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<script src="../src/jenkins.js" type="text/javascript"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+        <style type="text/css">
+            body { margin: 20px; }
+            .area{ float: left; margin-right: 20px;}
+            .row {
+	            width: 960px;
+	            margin: 0 auto;
+	            overflow: hidden;
+            }
+        </style>
+	</head>
+	<body>
+        <section class="row">
+		    <h1>Jenkins Test</h1>
+            <div class="area">
+		        <p>Input String:</p>
+                <textarea type="text" rows="5" cols="50" id="source"></textarea>
+            </div>
+            <div class="row">
+	        	<p><input type="button" value="Compute hash" id="compute"/></p>
+		        <h3>32-bit Hash:&nbsp<span id="jhash32"></span></h3>
+		        <h3>64-bit Hash:&nbsp<span id="jhash64"></span></h3>
+            </div>
+        </section>
+
+		<script language="JavaScript">
+		$('#compute').click(function() {
+			var source = $('#source').val();
+			$('#jhash32').text(Jenkins.hash32(source));
+			$('#jhash64').text(Jenkins.hash64(source));
+		});
+		</script>
+	</body>
+</html>

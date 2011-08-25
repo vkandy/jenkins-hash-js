@@ -6,15 +6,37 @@
  * var hash64 = Jenkins.hash64("");
  */
 var Jenkins = {
+    /**
+     * Default first initial seed.
+     */
+    pc: 0,
+
+    /**
+     * Default second initial seed.
+     */
+    pb: 0,
 
     /**
      * Computes and returns 32-bit hash of given message.
      */
-    hash32: function(msg) {
-        h = this.lookup3(msg, 0, 0);
-        return h.c;
-    }
+    hash32: function(msg, seeds) {
+        pc = typeof(seeds) != 'undefined' && typeof(seeds[1]) != 'undefined' ? options[1] : this.pc;
+        pb = typeof(seeds) != 'undefined' && typeof(seeds[0]) != 'undefined' ? options[0] : this.pb;
 
+        h = this.lookup3(msg, pc, pb);
+        return (h.c).toString(16);
+    },
+
+    /**
+     * Computes and returns 32-bit hash of given message.
+     */
+    hash64: function(msg, seeds) {
+        pc = typeof(seeds) != 'undefined' && typeof(seeds[1]) != 'undefined' ? options[1] : this.pc;
+        pb = typeof(seeds) != 'undefined' && typeof(seeds[0]) != 'undefined' ? options[0] : this.pb;
+
+        h = this.lookup3(msg, pc, pb);
+        return (h.b).toString(16) + (h.c).toString(16);
+    },
 
     /**
      * Implementation of lookup3 algorithm.
@@ -72,7 +94,7 @@ var Jenkins = {
         }
 
         // Final mixing of three 32-bit values in to c
-        mixed = this.final(a, b, c)
+        mixed = this.finalMix(a, b, c)
         a = mixed.a;
         b = mixed.b;
         c = mixed.c;
@@ -91,12 +113,12 @@ var Jenkins = {
         b -= a; b ^= this.rot(a, 19); a += c;
         c -= b; c ^= this.rot(b, 4); b += a;
         return {a : a, b : b, c: c};
-    }
+    },
 
     /**
      * Final mixing of 3 32-bit values (a,b,c) into c
      */
-    final: function(a, b, c) {
+    finalMix: function(a, b, c) {
         c ^= b; c -= this.rot(b, 14);
         a ^= c; a -= this.rot(c, 11);
         b ^= a; b -= this.rot(a, 25);
