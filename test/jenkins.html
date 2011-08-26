@@ -29,8 +29,9 @@
 		<script language="JavaScript">
 		$('#compute').click(function() {
 			var source = $('#source').val();
-			$('#jhash32').text(Jenkins.hash32(source));
-			$('#jhash64').text(Jenkins.hash64(source));
+            var j = new Jenkins([30, 0]);
+			$('#jhash32').text(j.hash32(source));
+			$('#jhash64').text(j.hash64(source));
 		});
 		</script>
 	</body>

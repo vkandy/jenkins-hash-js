@@ -2,46 +2,49 @@
  * Jenkins hash implementation which yeilds 32-bit and 64-bit hashes.
  *
  * // Usage: 
- * var hash32 = Jenkins.hash32("");
- * var hash64 = Jenkins.hash64("");
+ * var j = new Jenkins();
+ * var hash32 = j.hash32("");
+ * var hash64 = j.hash64("");
  */
-var Jenkins = {
+var Jenkins = function(seeds) {
     /**
      * Default first initial seed.
      */
-    pc: 0,
+    var pc = typeof(seeds) != 'undefined' && typeof(seeds[0]) != 'undefined' ? seeds[0] : 0;
 
     /**
      * Default second initial seed.
      */
-    pb: 0,
+    var pb = typeof(seeds) != 'undefined' && typeof(seeds[1]) != 'undefined' ? seeds[1] : 0;
+
+    // --------------------------------------------------
+    // Public access
+    // --------------------------------------------------
 
     /**
      * Computes and returns 32-bit hash of given message.
      */
-    hash32: function(msg, seeds) {
-        pc = typeof(seeds) != 'undefined' && typeof(seeds[1]) != 'undefined' ? options[1] : this.pc;
-        pb = typeof(seeds) != 'undefined' && typeof(seeds[0]) != 'undefined' ? options[0] : this.pb;
-
-        h = this.lookup3(msg, pc, pb);
+    this.hash32 = function(msg) {
+        var h = lookup3(msg, pc, pb);
         return (h.c).toString(16);
-    },
+    };
 
     /**
      * Computes and returns 32-bit hash of given message.
      */
-    hash64: function(msg, seeds) {
-        pc = typeof(seeds) != 'undefined' && typeof(seeds[1]) != 'undefined' ? options[1] : this.pc;
-        pb = typeof(seeds) != 'undefined' && typeof(seeds[0]) != 'undefined' ? options[0] : this.pb;
-
-        h = this.lookup3(msg, pc, pb);
+    this.hash64 = function(msg) {
+        var h = lookup3(msg, pc, pb);
         return (h.b).toString(16) + (h.c).toString(16);
-    },
+    };
+
+    // --------------------------------------------------
+    // Private methods
+    // --------------------------------------------------
 
     /**
      * Implementation of lookup3 algorithm.
      */
-    lookup3: function(k, pc, pb) {
+    var lookup3 = function(k, pc, pb) {
         var length = k.length;
         var a, b, c;
 
@@ -65,7 +68,7 @@ var Jenkins = {
             c += k[offset + 10] << 16;
             c += k[offset + 11] << 24;
 
-            mixed = this.mix(a, b, c);
+            mixed = mix(a, b, c);
             a = mixed.a;
             b = mixed.b;
             c = mixed.c;
@@ -90,50 +93,50 @@ var Jenkins = {
             case 2: a += k[offset + 1] << 8;
             case 1: a += k[offset + 0]; break;
 
-            case 0: return {c: c, b: b};
+            case 0: return {c: c >>> 0, b: b >>> 0};
         }
 
         // Final mixing of three 32-bit values in to c
-        mixed = this.finalMix(a, b, c)
+        mixed = finalMix(a, b, c)
         a = mixed.a;
         b = mixed.b;
         c = mixed.c;
 
-        return {c: c, b: b};
-    },
+        return {c: c >>> 0, b: b >>> 0};
+    };
 
     /**
      * Mixes 3 32-bit integers reversibly but fast.
      */
-    mix: function(a, b, c) {
-        a -= c; a ^= this.rot(c, 4); c += b; 
-        b -= a; b ^= this.rot(a, 6); a += c;
-        c -= b; c ^= this.rot(b, 8); b += a;
-        a -= c; a ^= this.rot(c, 16); c += b;
-        b -= a; b ^= this.rot(a, 19); a += c;
-        c -= b; c ^= this.rot(b, 4); b += a;
+    var mix = function(a, b, c) {
+        a -= c; a ^= rot(c, 4); c += b; 
+        b -= a; b ^= rot(a, 6); a += c;
+        c -= b; c ^= rot(b, 8); b += a;
+        a -= c; a ^= rot(c, 16); c += b;
+        b -= a; b ^= rot(a, 19); a += c;
+        c -= b; c ^= rot(b, 4); b += a;
         return {a : a, b : b, c: c};
-    },
+    };
 
     /**
      * Final mixing of 3 32-bit values (a,b,c) into c
      */
-    finalMix: function(a, b, c) {
-        c ^= b; c -= this.rot(b, 14);
-        a ^= c; a -= this.rot(c, 11);
-        b ^= a; b -= this.rot(a, 25);
-        c ^= b; c -= this.rot(b, 16);
-        a ^= c; a -= this.rot(c, 4);
-        b ^= a; b -= this.rot(a, 14);
-        c ^= b; c -= this.rot(b, 24);
+    var finalMix = function(a, b, c) {
+        c ^= b; c -= rot(b, 14);
+        a ^= c; a -= rot(c, 11);
+        b ^= a; b -= rot(a, 25);
+        c ^= b; c -= rot(b, 16);
+        a ^= c; a -= rot(c, 4);
+        b ^= a; b -= rot(a, 14);
+        c ^= b; c -= rot(b, 24);
         return {a : a, b : b, c: c};
-    },
+    };
 
     /**
      * Rotate x by k distance.
      */
-    rot: function(x, k) {
+    var rot = function(x, k) {
         return (((x) << (k)) | ((x) >> (32-(k))));
-    }
+    };
 };
 
